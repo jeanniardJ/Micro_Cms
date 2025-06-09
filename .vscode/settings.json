@@ -1,0 +1,10 @@
+{
+    "workspaceExtensions.disabled": [
+        "dsznajder.es7-react-js-snippets",
+        "ms-azuretools.vscode-containers",
+        "lukasz-wronski.ftp-sync",
+        "ms-vscode.makefile-tools",
+        "msjsdiag.vscode-react-native",
+        "TheNouillet.symfony-vscode"
+    ]
+}

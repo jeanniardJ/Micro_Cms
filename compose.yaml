@@ -1,0 +1,29 @@
+services:
+    app:
+        build:
+            context: .
+            dockerfile: Dockerfile
+        ports:
+            - "80:80"
+            - "443:443"
+        environment:
+            - APP_ENV=dev
+        depends_on:
+            - db
+        volumes:
+            - .:/home/app
+    db:
+        image: mysql:latest
+        environment:
+            MYSQL_ROOT_PASSWORD: root
+            MYSQL_DATABASE: MicroCMS
+            MYSQL_USER: user
+            MYSQL_PASSWORD: password
+        ports:
+            - "3306:3306"
+        volumes:
+            - web_data:/var/lib/mysql
+
+volumes:
+    web_data: # This volume will persist the web data
+        external: true
