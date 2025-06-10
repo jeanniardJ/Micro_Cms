@@ -23,7 +23,17 @@ services:
             - "3306:3306"
         volumes:
             - web_data:/var/lib/mysql
-
+    phpmyadmin:
+        image: phpmyadmin/phpmyadmin
+        environment:
+            PMA_HOST: db
+            PMA_USER: root
+            PMA_PASSWORD: root
+        ports:
+            - "8080:80"
+        depends_on:
+            - db
+            - app
 volumes:
     web_data: # This volume will persist the web data
         external: true

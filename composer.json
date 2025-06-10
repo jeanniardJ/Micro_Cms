@@ -1,0 +1,25 @@
+{
+    "name": "jeanniardj/micro_cms",
+    "type": "project",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "MicroCms\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "MicroCms\\Tests\\": "tests/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Jonathan J",
+            "email": "contact@jja-dev.fr"
+        }
+    ],
+    "require-dev": {
+        "phpstan/phpstan": "^2.1",
+        "phpunit/phpunit": "^11.5"
+    }
+}

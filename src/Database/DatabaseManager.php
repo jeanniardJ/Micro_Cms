@@ -1,0 +1,40 @@
+<?php
+
+declare(strict_types=1);
+
+namespace MicroCms\Database;
+
+use PDO;
+use RuntimeException;
+
+/**
+ * DatabaseManager is responsible for managing the database connection.
+ * This class uses the Singleton pattern to ensure a single instance of the connection.
+ */
+class DatabaseManager
+{
+    private static ?PDO $connection = null;
+
+    /**
+     * Get the PDO connection instance.
+     *
+     * @return PDO
+     */
+    public static function getConnection(): PDO
+    {
+        if (self::$connection === null) {
+            $dsn = getenv('DB_DSN');
+            $username = getenv('DB_USERNAME');
+            $password = getenv('DB_PASSWORD');
+
+            if (!$dsn || !$username || !$password) {
+                throw new RuntimeException('Database configuration is missing in environment variables.');
+            }
+
+            self::$connection = new PDO($dsn, $username, $password);
+            self::$connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        }
+
+        return self::$connection;
+    }
+}
