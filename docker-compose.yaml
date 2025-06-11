@@ -1,39 +1,19 @@
 services:
     app:
+        container_name: MicroCMS
+        image: php:8.4-apache
         build:
             context: .
             dockerfile: Dockerfile
+        environment:
+            - APP_ENV=dev
         ports:
             - "80:80"
             - "443:443"
-        environment:
-            - APP_ENV=dev
-        depends_on:
-            - db
         volumes:
-            - .:/home/app
-    db:
-        image: mysql:latest
-        environment:
-            MYSQL_ROOT_PASSWORD: root
-            MYSQL_DATABASE: MicroCMS
-            MYSQL_USER: user
-            MYSQL_PASSWORD: password
-        ports:
-            - "3306:3306"
-        volumes:
-            - web_data:/var/lib/mysql
-    phpmyadmin:
-        image: phpmyadmin/phpmyadmin
-        environment:
-            PMA_HOST: db
-            PMA_USER: root
-            PMA_PASSWORD: root
-        ports:
-            - "8080:80"
-        depends_on:
-            - db
-            - app
+            - micro_data:/var/www/html
+            - .:/var/www/html
+        restart: always
+    
 volumes:
-    web_data: # This volume will persist the web data
-        external: true
+    micro_data:

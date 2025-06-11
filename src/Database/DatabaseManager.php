@@ -6,6 +6,7 @@ namespace MicroCms\Database;
 
 use PDO;
 use RuntimeException;
+use MicroCms\Database\DatabaseConnection;
 
 /**
  * DatabaseManager is responsible for managing the database connection.
@@ -23,7 +24,7 @@ class DatabaseManager
     public static function getConnection(): PDO
     {
         if (self::$connection === null) {
-            $dsn = getenv('DB_DSN');
+            $dsn = str_replace('"', '', getenv('DB_DSN'));
             $username = getenv('DB_USERNAME');
             $password = getenv('DB_PASSWORD');
 
@@ -31,8 +32,7 @@ class DatabaseManager
                 throw new RuntimeException('Database configuration is missing in environment variables.');
             }
 
-            self::$connection = new PDO($dsn, $username, $password);
-            self::$connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            self::$connection = DatabaseConnection::getInstance($dsn, $username, $password)->getConnection();
         }
 
         return self::$connection;

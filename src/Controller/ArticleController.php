@@ -5,12 +5,20 @@ declare(strict_types=1);
 namespace MicroCms\Controller;
 
 use MicroCms\Model\Article;
+use MicroCms\Repository\ArticleRepository;
 
 /**
  * Controller for managing articles.
  */
 class ArticleController extends BaseController
 {
+    private ArticleRepository $repository;
+
+    public function __construct()
+    {
+        $this->repository = new ArticleRepository();
+    }
+
     /**
      * Create a new article.
      *
@@ -19,12 +27,7 @@ class ArticleController extends BaseController
      */
     public function create(array $data): bool
     {
-        $stmt = $this->db->prepare('INSERT INTO articles (title, content, category_id) VALUES (:title, :content, :category_id)');
-        return $stmt->execute([
-            'title' => $data['title'],
-            'content' => $data['content'],
-            'category_id' => $data['category_id']
-        ]);
+        return $this->repository->create($data);
     }
 
     /**
@@ -35,41 +38,30 @@ class ArticleController extends BaseController
      */
     public function read(int $id): ?Article
     {
-        $stmt = $this->db->prepare('SELECT * FROM articles WHERE id = :id');
-        $stmt->execute(['id' => $id]);
-        $result = $stmt->fetch();
-
-        return $result ? new Article($result) : null;
+        return $this->repository->findById($id);
     }
 
     /**
      * Update an article.
      *
-     * @param int $id The ID of the article.
-     * @param array $data The updated data.
+     * @param int $id The ID of the article to update.
+     * @param array $data The new data for the article.
      * @return bool True on success, false otherwise.
      */
     public function update(int $id, array $data): bool
     {
-        $stmt = $this->db->prepare('UPDATE articles SET title = :title, content = :content, category_id = :category_id WHERE id = :id');
-        return $stmt->execute([
-            'id' => $id,
-            'title' => $data['title'],
-            'content' => $data['content'],
-            'category_id' => $data['category_id']
-        ]);
+        return $this->repository->update($id, $data);
     }
 
     /**
      * Delete an article.
      *
-     * @param int $id The ID of the article.
+     * @param int $id The ID of the article to delete.
      * @return bool True on success, false otherwise.
      */
     public function delete(int $id): bool
     {
-        $stmt = $this->db->prepare('DELETE FROM articles WHERE id = :id');
-        return $stmt->execute(['id' => $id]);
+        return $this->repository->delete($id);
     }
 
     /**
@@ -79,7 +71,6 @@ class ArticleController extends BaseController
      */
     public function listAll(): array
     {
-        $stmt = $this->db->query('SELECT * FROM articles');
-        return $stmt->fetchAll();
+        return $this->repository->findAll();
     }
 }

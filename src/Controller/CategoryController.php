@@ -5,12 +5,20 @@ declare(strict_types=1);
 namespace MicroCms\Controller;
 
 use MicroCms\Model\Category;
+use MicroCms\Repository\CategoryRepository;
 
 /**
  * Controller for managing categories.
  */
 class CategoryController extends BaseController
 {
+    private CategoryRepository $repository;
+
+    public function __construct()
+    {
+        $this->repository = new CategoryRepository();
+    }
+
     /**
      * Create a new category.
      *
@@ -19,8 +27,7 @@ class CategoryController extends BaseController
      */
     public function create(array $data): bool
     {
-        $stmt = $this->db->prepare('INSERT INTO categories (name) VALUES (:name)');
-        return $stmt->execute(['name' => $data['name']]);
+        return $this->repository->create($data);
     }
 
     /**
@@ -31,39 +38,30 @@ class CategoryController extends BaseController
      */
     public function read(int $id): ?Category
     {
-        $stmt = $this->db->prepare('SELECT * FROM categories WHERE id = :id');
-        $stmt->execute(['id' => $id]);
-        $result = $stmt->fetch();
-
-        return $result ? new Category($result) : null;
+        return $this->repository->findById($id);
     }
 
     /**
      * Update a category.
      *
-     * @param int $id The ID of the category.
-     * @param array $data The updated data.
+     * @param int $id The ID of the category to update.
+     * @param array $data The new data for the category.
      * @return bool True on success, false otherwise.
      */
     public function update(int $id, array $data): bool
     {
-        $stmt = $this->db->prepare('UPDATE categories SET name = :name WHERE id = :id');
-        return $stmt->execute([
-            'id' => $id,
-            'name' => $data['name']
-        ]);
+        return $this->repository->update($id, $data);
     }
 
     /**
      * Delete a category.
      *
-     * @param int $id The ID of the category.
+     * @param int $id The ID of the category to delete.
      * @return bool True on success, false otherwise.
      */
     public function delete(int $id): bool
     {
-        $stmt = $this->db->prepare('DELETE FROM categories WHERE id = :id');
-        return $stmt->execute(['id' => $id]);
+        return $this->repository->delete($id);
     }
 
     /**
@@ -73,7 +71,6 @@ class CategoryController extends BaseController
      */
     public function listAll(): array
     {
-        $stmt = $this->db->query('SELECT * FROM categories');
-        return $stmt->fetchAll();
+        return $this->repository->findAll();
     }
 }

@@ -1,6 +1,7 @@
 <?php
 
 session_start();
+//phpinfo(); // Afficher les informations PHP pour le débogage
 define('BASE_PATH', dirname(__DIR__));
 
 // Inclure l'autoload de Composer

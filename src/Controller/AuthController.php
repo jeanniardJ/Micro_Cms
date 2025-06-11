@@ -30,7 +30,12 @@ class AuthController extends BaseController
         session_destroy();
     }
 
-    public function isAuthenticated(): bool
+    /**
+     * Check if a user is logged in.
+     *
+     * @return bool
+     */
+    public function isLoggedIn(): bool
     {
         return isset($_SESSION['user_id']);
     }

@@ -1,41 +1,60 @@
 FROM php:8.4-apache
 
-COPY . /home/app
-WORKDIR /home/app
+# Set environment variables
+ENV APACHE_DOCUMENT_ROOT /var/www/html/public
 
-ENV APACHE_DOCUMENT_ROOT /home/app/public
-
-# Install dependencies
+# Install dependencies and PHP extensions
 RUN apt-get update && apt-get install -y \
-    libzip-dev \
-    libpng-dev \
-    libjpeg-dev \
-    libfreetype6-dev \
-    libxml2-dev \
-    libonig-dev \
-    unzip \
-    git \
-    curl \
-    libicu-dev \
-    libpq-dev \
-    libmcrypt-dev \
-    libxslt-dev \
-    libmemcached-dev \
-    libldap2-dev \
-    libssl-dev \
-    libcurl4-openssl-dev \
-    libsqlite3-dev \
-    libbz2-dev \
-    libgmp-dev
+    zip unzip wget curl libzip-dev libicu-dev libonig-dev \
+    libfreetype6-dev libjpeg62-turbo-dev libpng-dev \
+    libxml2-dev libxslt1-dev libcurl4-openssl-dev \
+    libssl-dev libmcrypt-dev libreadline-dev \
+    libmemcached-dev libz-dev libpq-dev \
+    libldap2-dev libsnmp-dev \
+    libmagickwand-dev libmagickcore-dev \
+    autoconf build-essential \
+    libmariadb-dev libmariadb-dev-compat && \
+    docker-php-ext-configure gd --with-freetype --with-jpeg && \
+    docker-php-ext-install \
+    mysqli \
+    pdo \
+    pdo_mysql \
+    gd \
+    xsl \
+    xml \
+    intl \
+    opcache \
+    mbstring \
+    exif \
+    calendar \
+    sockets \
+    bz2 \
+    zip && \
+    docker-php-ext-enable \
+    mysqli \
+    pdo \
+    pdo_mysql \
+    gd \
+    xsl \
+    xml \
+    intl \
+    opcache \
+    mbstring \
+    exif \
+    calendar \
+    sockets \
+    bz2 \
+    zip && \
+    apt-get clean -y && rm -rf /var/lib/apt/lists/*
 
-# Install PHP extensions
-RUN docker-php-ext-configure gd --with-freetype --with-jpeg
-RUN docker-php-ext-install gd zip pdo pdo_mysql pdo_pgsql pdo_sqlite mysqli xml xsl bcmath intl opcache mbstring exif calendar ldap sockets bz2 gmp
+# Install Xdebug
+RUN pecl install xdebug && \
+    docker-php-ext-enable xdebug
 
-EXPOSE 80 443
-
-# Enable Apache modules
+# # Enable Apache modules
 RUN a2enmod rewrite headers ssl
 # Apache configuration /home/app
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
-RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf 
+RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
+
+RUN service apache2 restart
